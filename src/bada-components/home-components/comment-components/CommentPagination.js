@@ -35,6 +35,10 @@ const CommentPagination = () => {
 			onChangePage={handleChangePage}
 			rowsPerPage={size}
 			onChangeRowsPerPage={handleChangeRowsPerPage}
+			style={{
+				fontSize: '1rem',
+				fontWeight: "normal",
+			}}
 		/>
 	);
 }

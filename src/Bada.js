@@ -7,7 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 
 //components
-import Home from './bada-components/home/Home';
+import Home from './bada-components/Home';
 
 
 //redux 관련
@@ -16,6 +16,12 @@ import { applyMiddleware, createStore } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import rootReducer from './redux/reducers';
 import rootSaga from './redux/sagas'
+
+//3행 comment 부분
+import CommentInputForm from './bada-components/home-components/comment-components/CommentInputForm';
+import { Divider } from '@material-ui/core';
+import CommentList from './bada-components/home-components/comment-components/CommentList';
+import { Typography } from '@material-ui/core';
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -105,8 +111,12 @@ const Bada = () => {
 						<Home />
 					</TabPanel>
 					<TabPanel value={value} index={1}>
-						<div>2번째 화면</div>
-						{/* 2번째 화면  */}
+
+						<Typography> 사용자 코멘트 </Typography>
+
+						<Divider />
+						<CommentInputForm />
+						<CommentList />
 					</TabPanel>
 					<TabPanel value={value} index={2}>
 						{/* 3번째 화면 */}

@@ -10,7 +10,6 @@ import CommentPagination from './CommentPagination';
 const useStyles = makeStyles((theme) => ({
 	root: {
 		width: '100%',
-		maxWidth: 360,
 		backgroundColor: theme.palette.background.paper,
 	},
 	'@global': {
@@ -42,7 +41,7 @@ const CommentList = () => {
 	return (
 		<div className={classes.root}>
 
-			<List aria-label="main mailbox folders" style={{ height: "22vh", width: "100%", overflowY: "auto" }} >
+			<List aria-label="main mailbox folders" style={{ height: "100vh", width: "100%", overflowY: "auto" }} >
 				{
 					data.content.map((eachComment, index) => {
 						//console.log('----------------experienceList data체크-------------\n' + eachComment);

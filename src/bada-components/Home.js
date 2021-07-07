@@ -8,33 +8,22 @@ import { Hidden } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import SelectBox from './home-components/SelectBox';
 
-//데이터 뿌려지는 형태
-import SeaWaterBarChart from './charts/BarChart';
-import SeaWaterLineChart from './charts/LineChart';
-import SeaWaterTable from './data-display/Table';
+//2행 차트 
+import SeaWaterBarChart from './home-components/data-display/BarChart';
+import SeaWaterLineChart from './home-components/data-display/LineChart';
 
-//user comment 부분
-import CommentList from './comment-components/CommentList';
-import CommentInputForm from './comment-components/CommentInputForm';
+//3행 테이블
+import SeaWaterTable from './home-components/data-display/Table';
 
-
-
-//selectBox
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import { FormHelperText } from '@material-ui/core';
+//3행 comment 부분
+import CommentInputForm from './home-components/comment-components/CommentInputForm';
+import { Divider } from '@material-ui/core';
+import CommentList from './home-components/comment-components/CommentList';
 
 import { Typography } from '@material-ui/core';
-import { Box } from '@material-ui/core';
-
-import { Divider } from '@material-ui/core';
-
 
 //api
-import api from '../../api/opendata';
-
-
+import api from '../api/opendata';
 
 //style 설정
 const useStyles = makeStyles((theme) => ({
@@ -62,18 +51,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 //연도별 시별 월별 데이터(ex/ 2016년 8부산시) - barChart와 Table에서 사용할 데이터
-const transformSidoData = (sido, year, month, source) => {
+const transformSidoData = (sido, year, month, source, purpose) => {
 
 	// 1. selebox에서 year 가져오기
 	//매개변수로 넘겨받음
-	// console.log(year);
-	// console.log(sido);
-	// console.log(month);
-
 
 	//2.수질 데이터 source 가져오기
 	//매개변수로 넘겨받음
-	//console.log(source);
 
 	//3. selected된 값에 맞는 데이터 반환하기
 	//3-1 선택한 year와 일치하는 데이터만 가져오기
@@ -89,9 +73,40 @@ const transformSidoData = (sido, year, month, source) => {
 	const monthSeaWaterData = sidoSeaWaterData.filter(seaWaterData => new Date(Number(seaWaterData.res_date)).getMonth() + 1 == month);
 	console.log(monthSeaWaterData);
 
-	//4. 바차트와 테이블에 들어갈 형태로 데이터구조 변경하기
+	//4. 바차트와 테이블에 들어갈 형태로 데이터구조 변경하기 - 데이터가 뿌려지는 형태에 따라 item 객체의 프로퍼티가 달라짐
 	const transformedData = [];// 변경된 데이터 들어갈 곳
 
+	//barchart
+	// const item = {
+	// 	해수욕장명: eachSeaWaterData['sta_nm'],
+	// 	대장균수: Number(eachSeaWaterData['res1']),
+	// 	장구균수: Number(eachSeaWaterData['res2']),
+	// 	조사일자: (res_date.getMonth() + 1) + '/' + res_date.getDate(),
+	// }
+
+	//linechart
+	// const item = {
+	// 	조사일자: (res_date.getMonth() + 1) + '/' + res_date.getDate(),
+	// 	대장균수: seaWater['res1'],
+	// 	장구균수: seaWater['res2'],
+	// }
+
+	//table
+	// const item = {
+	// 	해수욕장명: eachSeaWaterData['sta_nm'],
+	// 	대장균수: Number(eachSeaWaterData['res1']),
+	// 	장구균수: Number(eachSeaWaterData['res2']),
+	// 	조사일자: (res_date.getMonth() + 1) + '/' + res_date.getDate(),
+	// 	적합여부: eachSeaWaterData['res_yn'],
+	// }
+
+	// switch (purpose) {
+	// 	case "barChart":
+	// 		const item = {}
+	// 		break;
+	// 	case "lineChart":
+	// 	case "table":
+	// }
 	for (let eachSeaWaterData of monthSeaWaterData) {
 		const res_date = new Date(Number(eachSeaWaterData['res_date']));
 		const item = {
@@ -99,10 +114,9 @@ const transformSidoData = (sido, year, month, source) => {
 			대장균수: Number(eachSeaWaterData['res1']),
 			장구균수: Number(eachSeaWaterData['res2']),
 			조사일자: (res_date.getMonth() + 1) + '/' + res_date.getDate(),
+			적합여부: eachSeaWaterData['res_yn'],
 		}
-
 		transformedData.push(item);
-
 	}
 
 	//5. 데이터 정렬하기 
@@ -215,9 +229,7 @@ const transformTableData = (sido, year, month, source) => {
 			조사일자: (res_date.getMonth() + 1) + '/' + res_date.getDate(),
 			적합여부: eachSeaWaterData['res_yn'],
 		}
-
 		transformedData.push(item);
-
 	}
 
 	//5. 데이터 정렬하기 
@@ -265,7 +277,7 @@ const Home = () => {
 	const sidoItem = ['강원', '경남', '경북', '부산', '울산', '인천', '전남', '전북', '제주', '충남'];
 	const yearItem = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021];
 	const monthItem = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-
+	const [transformedData, setTransformedData] = useState([]);
 
 	useEffect(() => {
 		//console.log('ajax시작');
@@ -278,8 +290,7 @@ const Home = () => {
 		, []
 	);
 
-
-	//selectBox 선택값에 따른 년도값 제어
+	//selectBox 선택값에 따른 년도, 시도, 월 값 제어
 	const handleChange = (event, subject) => {
 		switch (subject) {
 			case "년도":
@@ -293,6 +304,16 @@ const Home = () => {
 				break;
 		}
 	};
+
+	const searchClick = (event) => {
+
+		//셀렉트 박스 선택되지 않았을 때
+		if (!(year && month && sido)) {
+
+		}
+		//선택 되었을때
+		setTransformedData(transformSidoData(sido, year, month, source));
+	}
 
 	//barchart x축 해수욕장명 클릭에 따른 station 값 변경
 	const handleClick = (selectedData) => {
@@ -320,7 +341,7 @@ const Home = () => {
 						{/*sido 선택하는 select box */}
 						<SelectBox subjectItem={monthItem} subject={"월"} selectedValue={month} onSelectedChange={handleChange} />
 
-						<Button variant="contained" onClick={() => transformSidoData(sido, year, month, source)}>조회</Button>
+						<Button variant="contained" onClick={(event) => searchClick(event)}>조회</Button>
 
 						{/* <Typography display='inline'>
 							해수욕장 수질
@@ -344,7 +365,7 @@ const Home = () => {
 							{sido} 전역 해수욕장 수질
 						</Typography>
 
-						<SeaWaterBarChart data={transformSidoData(sido, year, month, source)} handleClick={handleClick} />
+						<SeaWaterBarChart data={transformedData} handleClick={handleClick} />
 					</Paper>
 				</Grid>
 
@@ -371,7 +392,7 @@ const Home = () => {
 				<Grid item xs={12} sm={7} lg={6}>
 					<Paper className={classes.paper} style={{ height: "37vh" }} >
 						{/* <ResponsiveTable data={transformTableData(source, sido, month)} /> */}
-						<SeaWaterTable data={transformTableData(sido, year, month, source)} />
+						<SeaWaterTable data={transformedData} />
 					</Paper>
 				</Grid>
 
@@ -379,7 +400,7 @@ const Home = () => {
 				<Grid item xs={12} sm={5} lg={5}>
 					<Paper className={classes.paper} style={{ height: "37vh" }}>
 
-						<Typography> 수질 코멘트 </Typography>
+						<Typography> 수질 특이사항 </Typography>
 
 						<Divider />
 						<CommentInputForm />

@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react';
 import api from '../../api/opendata';
 import source from './data/source';
 import { PROPERTY_TYPES } from '@babel/types';
-import sourceSample from '../../bada-components/data/sourceSample';
 
 
 const useStyles = makeStyles((theme) => ({
